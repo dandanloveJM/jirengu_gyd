@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>load more</title>
+<style>
+  ul,li {
+		padding: 0;
+		margin: 0;
+	}
+
+	#ct > li {
+		list-style: none;
+		border: 1px solid palevioletred;
+		padding: 10px;
+		margin-bottom: 10px;
+	}
+	.container {
+		margin: 0 auto;
+		text-align: center;
+	}
+	.btn {
+		display: inline-block;
+		height: 40px;
+		line-height: 40px;
+		width: 80px;
+		border: 1px solid #e27272;
+		border-radius: 3px;
+		text-align: center;
+		text-decoration: none;
+		color: #e27272;
+	}
+	.btn:hover {
+		background: goldenrod;
+		color: #fff;
+	}
+</style>
+</head>
+<body>
+	<div class="container">
+		<ul id="ct">
+		
+	 </ul>
+   <a href="#" id="load-more" class="btn">加载更多</a>
+	</div>
+ 	
+</body>
+<script>
+	/*伪代码*/
+/*	var btn = document.querySelector('#load-more')
+	var ct = document.querySelector('#ct')
+	var pageIndex = 0
+	var isDataArrive = true
+
+	btn.addEventListener('click', function(event){
+		event.preventDefault()
+		
+		if(!isDataArrive)
+		{	
+			return 			
+		}
+
+		var xhr = new XMLHttpRequest()
+		xhr.onreadystatechange = function(){
+			if(xhr.readyState === 4)
+			{
+				isDataArrive = true
+				if(xhr.status === 200 || xhr.status === 304)
+				{
+					var result = JSON.parse(xhr.responseText)
+				var fragment = document.createDocumentFragment()
+				for(var i = 0; i < result.length; i++)
+				{
+					 var node = document.createElement('li')
+					 node.innerText = result[i]
+					 fragment.appendChild(node)
+				}
+				ct.appendChild(fragment)
+
+				pageIndex = pageIndex + 5
+				}
+			} 
+			
+		}
+		xhr.open('GET','/loadMore?index='+pageIndex+'&length=5', true)
+		xhr.send()
+		isDataArrive = false
+	})
+*/
+	var btn = document.querySelector('#load-more')
+	var ct = document.querySelector('#ct')
+	var pageIndex = 0
+	var isLoading = false
+
+	btn.addEventListener('click', function(event){
+		event.preventDefault()//阻止默认事件发生
+		if(isLoading)
+		{	
+			return 	//如果正在请求数据，则这次点击什么也不做		
+		}
+		//执行到这里说明没有在请求数据，则后买开始发请求
+		loadData(function(result){
+			renderPage(result)
+		})
+		isLoading = true
+		
+	})
+
+	function loadData(callback)
+	{
+		ajax({
+			type: 'GET',
+			url: '/loadMore',
+			data: {
+				index: pageIndex,
+				length: 5
+			},
+			dataType: 'JSON',
+			onSuccess: callback,
+			onError: function(){
+				console.log('error')
+			}
+		})
+		
+	}
+
+	
+	function renderPage(news)
+	{	
+		var fragment = document.createDocumentFragment()
+		for(var i = 0; i < news.length; i++)
+		{
+			var node = document.createElement('li')
+			node.innerText = news[i]
+			fragment.appendChild(node)
+		}
+		ct.appendChild(fragment)
+	}
+
+	function ajax(options){
+		//接收参数与设置默认参数
+		options.onSuccess = options.onSuccess || function(){}
+		options.onError = options.onError || function(){}
+		options.type = options.type || 'GET'
+		options.dataType = options.dataType || 'JSON'
+		options.data = options.data || {}
+		//处理收到的数据，使其成为字符串
+		var query = '?'
+		for(key in options.data){
+			query += key + '=' + options.data[key]+'&'
+		}
+		query = query.substr(0, query.length-1)
+
+		//创建AJAX对象
+		var xhr = new XMLHttpRequest()
+		//开始请求啦
+		xhr.onreadystatechange = function(){
+			if(xhr.readyState === 4)
+			{
+				isLoading = false
+				if(xhr.status === 200 || xhr.status === 304)
+				{
+					if(options.dataType === 'text')
+					{
+						options.onSuccess(xhr.responseText)
+					}
+					if(options.dataType.toLowerCase() === 'json')
+					{
+						var result = JSON.parse(xhr.responseText)
+						options.onSuccess(result)
+						pageIndex = pageIndex + 5
+					}
+					
+				}
+			} 
+			else
+			{
+				options.onError()
+			}
+			
+		}
+		
+		
+		xhr.open(options.type, options.url + query, true)
+		xhr.send()
+		
+	}
+</script>
+</html>
