@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>使用降域实现跨域</title>
+</head>
+<body>
+<div>
+    <input type="text" id="input" placeholder="http://www.a.dandan.com:8080/a.html">
+</div>
+<iframe src="http://www.b.dandan.com:8080/b.html" frameborder="0"></iframe>
+</body>
+<script>
+  //发送消息
+    document.querySelector('#input').addEventListener('input', function(event){
+        console.log(event.target.value)
+        window.frames[0].postMessage(event.target.value,'*')
+    })
+  //window接收消息  
+    window.addEventListener('message', function(event){
+        document.querySelector('#input').value = event.data
+        console.log(event.data)
+    })
+</script>
+</html>
+[第一个html](http://js.jirengu.com/mesucocexi/1/edit)
+[第2个html](http://js.jirengu.com/daweluxipu/1/edit)

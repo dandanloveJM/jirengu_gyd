@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>使用降域实现跨域</title>
+  <style>
+  div {
+      width: 500px;
+      padding: 20px;
+      float: left;
+  }
+  div>input {
+      width: 80%;
+  }
+  </style>
+</head>
+<body>
+<div>
+    <input type="text" id="input" placeholder="http://www.a.dandan.com:8080/a.html">
+</div>
+<iframe src="http://www.b.dandan.com:8080/b.html" frameborder="0"></iframe>
+</body>
+<script>
+    document.querySelector('#input').addEventListener('input', function(event){
+        console.log(event.target.value)
+        window.frames[0].document.querySelector('input').value = event.target.value
+    })
+    document.domain = 'dandan.com'
+</script>
+</html>
