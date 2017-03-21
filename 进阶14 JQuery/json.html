@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>json</title>
+  <style>
+  ul,li {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  .container {
+    margin: 0 auto;
+    max-width: 700px;
+  }
+  li {
+    list-style: none;
+  }
+  
+  .clearfix:after {
+    display: block;
+    content: '';
+    clear: both;
+  }
+  .detail > li {
+    width: 200px;
+    float: left;
+    margin-left: 20px;
+    border: 1px solid;
+    position: relative;
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  .detail > li p:last-child {
+    color: red;
+  }
+  .detail .cover {
+    background: rgba(78, 74, 74, .7);
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: none;
+    transition: all ease .5s;
+  }
+  .detail > li:hover .cover{
+    display: block;
+  }
+
+  .cover .button {
+    text-decoration: none;
+    padding: 10px 5px;
+    background: #fff;
+    color: red;
+    border: 1px solid red;
+    border-radius: 5px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .detail img {
+    margin-top: 15px;
+  }
+  .btn {
+    padding: 15px;
+    background: #fff;
+    color: red;
+    border: 1px solid red;
+    border-radius: 5px;
+    text-decoration: none;
+  }
+  </style>
+</head>
+<body>
+  <div class="container">
+      <h2>珠宝首饰</h2>
+      <ul class="detail clearfix">
+        <li>
+            <div class="cover">
+                <a href="#" class="button">立即抢购</a>
+            </div>
+            <img src="http://img10.360buyimg.com/N3/jfs/t1360/330/897475737/123557/23624706/55b05e25N13d4ec5e.jpg" alt="">
+            <p>藏美千足金和田玉金镶玉路路通吊坠</p>
+            <p>￥1699.00</p>
+        </li>
+
+        <li>
+          <div class="cover">
+              <a href="#" class="button">立即抢购</a>
+          </div>
+          <img src="http://img10.360buyimg.com/N3/jfs/t1360/330/897475737/123557/23624706/55b05e25N13d4ec5e.jpg" alt="">
+          <p>藏美千足金和田玉金镶玉路路通吊坠</p>
+          <p>￥1699.00</p>
+        </li>
+        <li>
+          <div class="cover">
+              <a href="#" class="button">立即抢购</a>
+          </div>
+          <img src="http://img10.360buyimg.com/N3/jfs/t1360/330/897475737/123557/23624706/55b05e25N13d4ec5e.jpg" alt="">
+          <p>藏美千足金和田玉金镶玉路路通吊坠</p>
+          <p>￥1699.00</p>
+        </li>
+        <li>
+          <div class="cover">
+              <a href="#" class="button">立即抢购</a>
+          </div>
+          <img src="http://img10.360buyimg.com/N3/jfs/t1360/330/897475737/123557/23624706/55b05e25N13d4ec5e.jpg" alt="">
+          <p>藏美千足金和田玉金镶玉路路通吊坠</p>
+          <p>￥1699.00</p>
+        </li>
+        <li>
+          <div class="cover">
+              <a href="#" class="button">立即抢购</a>
+          </div>
+          <img src="http://img10.360buyimg.com/N3/jfs/t1360/330/897475737/123557/23624706/55b05e25N13d4ec5e.jpg" alt="">
+          <p>藏美千足金和田玉金镶玉路路通吊坠</p>
+          <p>￥1699.00</p>
+        </li>
+        <li>
+          <div class="cover">
+              <a href="#" class="button">立即抢购</a>
+          </div>
+          <img src="http://img10.360buyimg.com/N3/jfs/t1360/330/897475737/123557/23624706/55b05e25N13d4ec5e.jpg" alt="">
+          <p>藏美千足金和田玉金镶玉路路通吊坠</p>
+          <p>￥1699.00</p>
+        </li>
+                
+        </ul>
+        <a href="#" class="btn">添加</a>
+  </div>
+
+</body>
+<script src="js\jquery-3.2.0.min.js"></script>
+<script>
+  var products = [
+  {
+    img: 'http://img10.360buyimg.com/N3/jfs/t2242/92/1446546284/374195/9196ac66/56af0958N1a723458.jpg',
+    name: '珂兰 黄金转运珠 猴哥款',
+    price: '￥405.00'
+  }, {
+    img: 'http://img10.360buyimg.com/N3/jfs/t2242/92/1446546284/374195/9196ac66/56af0958N1a723458.jpg',
+    name: '珂兰 黄金转运珠 悟空款',
+    price: '￥1000.00'
+  }, {
+    img: 'http://img10.360buyimg.com/N3/jfs/t2242/92/1446546284/374195/9196ac66/56af0958N1a723458.jpg',
+    name: '珂兰 黄金转运珠 斗佛款',
+    price: '￥4500.00'
+  }
+]
+
+$('.btn').on('click', function(event){
+  event.preventDefault()
+  var frag = $(document.createDocumentFragment())
+  frag.append(getProductsHTML(products))
+  $('ul').append(frag)
+  console.log(frag)
+})
+
+function getProductsHTML(products) {
+  var html = ''
+  html += '<li><div class="cover"><a href="#" class="button">立即抢购</a></div>'
+  html += '<img src=' + products[0].img + '>'
+  html += '<p>' + products[0].name + '</p>'
+  html += '<p>' + products[0].price + '</p></li>'
+  html += '<li><div class="cover"><a href="#" class="button">立即抢购</a></div>'
+  html += '<img src=' + products[1].img + '>'
+  html += '<p>' + products[1].name + '</p>'
+  html += '<p>' + products[1].price + '</p></li>'
+  html += '<li><div class="cover"><a href="#" class="button">立即抢购</a></div>'
+  html += '<img src=' + products[2].img + '>'
+  html += '<p>' + products[2].name + '</p>'
+  html += '<p>' + products[2].price + '</p></li>'
+  return html
+}
+</script>
+</html>

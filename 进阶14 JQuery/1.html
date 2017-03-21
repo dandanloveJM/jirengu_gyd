@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>JS Bin</title>
+  <script src="js\jquery-3.2.0.min.js"></script>
+  <style>
+  .click {
+      background: lightskyblue;
+  }
+  </style>
+</head>
+<body>
+<div>
+    <button id="btn">点击我</button>
+    <ul>
+        <li>111</li>
+        <li>222</li>
+        <li>333</li>
+    </ul>
+</div>
+<div id="clickme">
+  Click here
+</div>
+<img id="book" src="image\1.jpg" alt="" width="100" height="123"
+  style="position: relative; left: 10px;">
+
+</body>
+<script>
+    $('ul').on('click', 'li', function(){
+        console.log($(this).text())
+        $(this).toggleClass('click')
+    })
+    $( "#clickme" ).click(function() {
+  $( "#book" ).animate({
+    opacity: 0.25,
+    left: "+=50",
+    height: "toggle"
+  }, 5000,'swing');
+});
+</script>
+</html>

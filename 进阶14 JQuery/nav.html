@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>nav</title>
+  <script src="js\jquery-3.2.0.min.js"></script>
+  <style>
+  ul,li,p {
+    margin: 0;
+    padding: 0;
+  }
+  li {
+      list-style: none;
+  }
+  .parent {
+      background: #c7171e;
+      max-width: 220px;
+  }
+  .parent > li {
+      line-height: 40px;
+      padding: 10px 10px;
+      border-bottom: 1px solid #de272e;
+      position: relative;
+  }
+  .parent > li > p {
+      color: #fff;
+  }
+  .parent > li > span {
+      color: #fff;
+      float: right;
+  }
+  .child {
+      position: absolute;
+      border: 1px solid #666;
+      max-width: 200px;
+      right: -210px;
+      padding: 10px 5px;
+      top: 0;
+      display: none;
+
+  }
+  .child > li {
+      width: 100px;
+      float: left;
+  }
+  </style>
+</head>
+<body>
+<ul class="parent">
+    <li>
+        <span>&gt;</span>
+        <p>珠宝玉器</p>
+        <ul class="child">
+            <li>翡翠</li>
+            <li>玉石</li>
+            <li>宝石</li>
+            <li>水晶</li>
+            <li>玛瑙</li>
+            <li>珍珠</li>
+            <li>钻石</li>
+            <li>琥珀</li>
+            <li>和田</li>
+            <li>琥珀</li>
+        </ul>
+    </li>
+    <li>
+        <span>&gt;</span>
+        <p>珠宝玉器</p>
+        <ul class="child">
+            <li>宝石</li>
+            <li>水晶</li>
+            <li>玛瑙</li>
+            <li>珍珠</li>
+            <li>钻石</li>
+            <li>琥珀</li>
+            <li>和田</li>
+            <li>琥珀</li>
+        </ul>
+    </li>
+    <li>
+        <span>&gt;</span>
+        <p>珠宝玉器</p>
+        <ul class="child">
+            <li>玛瑙</li>
+            <li>珍珠</li>
+            <li>钻石</li>
+            <li>琥珀</li>
+            <li>和田</li>
+            <li>琥珀</li>
+        </ul>
+    </li>
+    <li>
+        <span>&gt;</span>
+        <p>珠宝玉器</p>
+        <ul class="child">
+            <li>琥珀</li>
+            <li>和田</li>
+            <li>琥珀</li>
+        </ul>
+    </li>
+    <li>
+        <span>&gt;</span>
+        <p>珠宝玉器</p>
+        <ul class="child">
+            <li>宝石</li>
+            <li>水晶</li>
+            <li>玛瑙</li>
+            <li>珍珠</li>
+            <li>钻石</li>
+            <li>琥珀</li>
+            <li>和田</li>
+            <li>琥珀</li>
+        </ul>
+    </li>
+</ul>
+
+
+</body>
+<script>
+  $('.parent').on('mouseover', 'li', function(){
+      $(this).find('.child').show()
+  }) 
+  $('.parent').on('mouseout', 'li', function(){
+      $(this).find('.child').hide()
+  }) 
+</script>
+</html>
