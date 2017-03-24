@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>server-mock使用说明</title>
+<style>
+  .container{
+    width: 900px;
+    margin: 0 auto;
+  }
+	ul,li {
+		margin: 0;
+		padding: 0;
+	}
+	li {
+		list-style: none;
+	}
+	.content > li {
+		border: 1px solid lightskyblue;
+		text-align: center;
+		border-radius: 5px;
+		margin-bottom: 5px;
+		line-height: 36px;
+	}
+	.content>li:hover {
+		background: plum;
+		cursor: pointer;
+	}
+	#btn {
+		line-height: 45px;
+		border: 2px solid #deade6;
+		border-radius: 5px;
+		background: white;
+		font-size: 20px;
+		cursor: pointer;
+		width: 115px;
+		text-align: center;
+
+	}
+	.disabled {
+		background: #666;
+		border: 2px solid #333;
+		color: #000;
+
+	}
+</style>
+</head>
+<body>
+  <div class="container">
+		<ul class="content">
+			<li>内容1</li>
+			<li>内容2</li>
+		</ul>
+		
+    <button id="btn">加载更多</button> 
+
+  </div>
+
+
+  	<script src=".\jquery-3.2.0.min.js"></script>
+    <script>
+		var startIndex = 3
+		var isDataArrive = true
+  	$('#btn').on('click', function(){
+			$('#btn').addClass('disabled')
+				//在数据传输完毕前上锁
+			 if(!isDataArrive){
+				 $('#btn').addClass('disabled')
+				 for(var i = 0; i < 100; i++)
+				 {}
+				 return
+			 }
+				//发送请求
+				$.get('./getContent', {start: startIndex}, function(data){
+					if(data.status === 0)
+					{
+						startIndex += 5
+						console.log('ajax成功')
+						appendhtml(data.dataContent)
+						isDataArrive = true
+						$('#btn').removeClass('disabled')
+					}			
+				})
+				//解锁
+			$('#btn').removeClass('disabled')
+
+		})
+
+		function appendhtml(content){
+			var html = ''
+			$.each(content, function(){
+				html += '<li>' + this + '</li>'
+			})
+			$('.content').append(html)
+
+		}
+  	</script>
+</body>
+</html>
