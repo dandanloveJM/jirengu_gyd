@@ -67,8 +67,6 @@
 				//在数据传输完毕前上锁
 			 if(!isDataArrive){
 				 $('#btn').addClass('disabled')
-				 for(var i = 0; i < 100; i++)
-				 {}
 				 return
 			 }
 				//发送请求
@@ -80,7 +78,13 @@
 						appendhtml(data.dataContent)
 						isDataArrive = true
 						$('#btn').removeClass('disabled')
-					}			
+					}else{
+				alert('出错了')
+			}
+			
+		}).fail(function(){
+			alert('系统异常')
+		})			
 				})
 				//解锁
 			$('#btn').removeClass('disabled')
