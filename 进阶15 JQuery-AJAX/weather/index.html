@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>天气预报</title>
+<style>
+  * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+  }
+  body {
+      background: #76ADCB;
+      position: relative;
+  }
+  .clearfix:after {
+      clear: both;
+      content: '';
+      display: block;
+  }
+  div.weather{
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, 50%);
+      width: 585px;
+      background: #94D1ED;
+      border: 1px solid #76ADCB;
+      border-radius: 5px;
+      margin: 0 auto; 
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.69);
+      padding-top: 10px;
+  }
+  .today {
+      padding-left: 30px;
+  }
+  .today > img {
+      float: left;
+      margin-top: -36px;
+  }
+  li {
+      list-style: none;
+  }
+  .tem {
+      margin-left: 222px;
+      margin-top: 26px;
+      font-size: 79px;
+      color: white;
+  }
+  .city {
+      margin-left: 222px;
+      color: white;
+      font-size: 36px;
+      letter-spacing: 5px;
+  }
+  .more {
+      margin-top: 20px;
+      background: linear-gradient(135deg, #E0EDF6, #F4FEFF);
+      width: 100%;
+  }
+  .more > ul > li {
+      width: 50%;
+      border-right: 1px solid darkgray;
+      position: relative;
+      color: #B1CBE4;
+      text-align: center;
+      float: left;
+      padding-top: 15px;
+      padding-bottom: 15px;
+  }
+  .more > ul > li:last-child {
+      border-right: 0;
+  }
+  .more li>img {
+      margin-top: 0px;
+  }
+  .more li>span{
+      position: absolute;
+      left: 5px;
+      top: 10px;
+      font-weight: 800;
+  }
+ .moreTem {
+     font-size: 20px;
+     text-indent: 0.8em;
+     font-weight: 900;
+     margin-top: -10px;
+ }
+ 
+</style>
+</head>
+<body>
+ 
+		
+  	<script src=".\hmac-sha1.js"></script>
+		<script src=".\jquery.js"></script>
+    <script>
+		var UID = "U43488234D"; // 测试用 用户ID，请更换成您自己的用户ID
+  var KEY = "4l8hpmz3fad0gnua"; // 测试用key，请更换成您自己的 Key
+ 
+  var API = "http://api.seniverse.com/v3/weather/daily.json"; // 获取天气实况
+  var LOCATION = "beijing"; // 除拼音外，还可以使用 v3 id、汉语等形式
+  // 获取当前时间戳
+  var ts = Math.floor((new Date()).getTime() / 1000);
+  // 构造验证参数字符串
+  var str = "ts="+ts+"&uid=" + UID;
+  // 使用 HMAC-SHA1 方式，以 API 密钥（key）对上一步生成的参数字符串（raw）进行加密
+  // 并将加密结果用 base64 编码，并做一个 urlencode，得到签名 sig
+  var sig = CryptoJS.HmacSHA1(str, KEY).toString(CryptoJS.enc.Base64);
+  sig = encodeURIComponent(sig);
+  str = str + "&sig=" + sig;
+ 
+  // 构造最终请求的 url
+  var url = API + "?location=beijing&ts="+ ts + '&uid='+ UID + '&sig=' + sig + '&days=4'
+  
+ 
+  // 向 HTML 中动态插入 script 标签，通过 JSONP 的方式进行调用
+  $.ajax({
+    type: 'get',
+    url: url,
+    dataType: 'jsonp',
+    jsonp: 'callback',
+    jsonpCallback: "showWeather",
+    success: function(data) {
+    var $obj = $('body')
+    var city = data.results[0].location.name
+    var weather = data.results[0].daily
+    
+    var html = ''
+    html += '<div class="weather clearfix"><div class="today">'
+    html += '<img src="' + './3d_180/' + weather[0].code_day + '.png" >'
+    html += '<h3 class="tem">' + weather[0].low +'-' + weather[0].high +'°</h3>'
+    html += '<p class="city">' + city + '</p></div>'
+
+    
+    for(var i = 1; i <= 2; i++)
+    {  
+      var current = data.results[0].daily[i.toString()]
+      var currentdate = current.date
+      var weNeedDateArray = currentdate.split('-')
+     
+      var month 
+      var day
+      if(weNeedDateArray[1].charAt(0) === '0')
+      {
+        month = weNeedDateArray[1].charAt(1)
+      }
+      else{
+        month = weNeedDateArray[1]
+      }
+
+      if(weNeedDateArray[2].charAt(0) === '0'){
+        day = weNeedDateArray[2].charAt(1)
+      }else{
+        day = weNeedDateArray[2]
+      }
+      
+      var finalDate = month + '月' + day + '日'
+      html += '<div class="more clearfix"><ul class="clearfix"><li>'
+      html += '<span>'+finalDate + '</span>'
+      html += '<img src="./3d_60/' + current.code_day + '.png" alt="">'
+      html += '<p class="moreTem">'+ current.low + '-' + current.high +'°</p></li>'
+    }
+    
+    html += '</ul></div></div>'
+    
+
+   $('body').append(html)
+  },
+    error: function(){
+      console.log('fail')
+    }
+  });
+
+
+
+
+
+
+
+  	</script>
+</body>
+</html>
