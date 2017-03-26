@@ -76,7 +76,10 @@
 					if(ret.status === 0){
 						pageIndex++
 						appendHTML(ret.data)
-						
+						//当窗口的内容还没有填满窗口，无法滚动屏幕时
+						if(isShow($('.load-more')) && !isOver && isDataArrive){
+							getNews()
+						}
 					}else {
 						alert('获取新闻出错')
 					}
@@ -90,7 +93,7 @@
 		function appendHTML(content){
 			if(content.length === 0){
 				isOver = true
-				$('.container').append('<p>没有更多数据了~~~</p>')
+				$('.news').append('<p>没有更多数据了~~~</p>')
 			}
 
 			var html = ''
