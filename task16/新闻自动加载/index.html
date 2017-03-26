@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>新闻自动加载</title>
+<style>
+  .container{
+    width: 900px;
+    margin: 0 auto;
+  }
+	a {
+		text-decoration: none;
+	}
+	li {
+		list-style: none;
+	}
+	.clearfix:after {
+		clear: both;
+		content: '';
+		display: block;
+	}
+	.item {
+		padding: 10px 5px;
+		cursor: pointer;
+	}
+	.item .thumb img {
+		width: 100px;
+		height: 100px;
+	}
+	.item .thumb {
+		float: left;
+	}
+	.item h2 {
+		margin-left: 120px;
+		font-size: 20px;
+		color: #000;
+	}
+	.item p {
+		margin-left: 120px;
+		font-size: 16px;
+		color: #ccc;
+		margin-top: 10px;
+	}
+	.load-more {
+		visibility: hidden;
+		height: 20px;
+	}
+</style>
+</head>
+<body>
+  <div class="container">
+    <ul class="news">
+		</ul>
+		<p class="load-more"></p>
+  </div>
+
+  	<script src=".\jquery-3.2.0.min.js"></script>
+    <script>
+		var pageIndex = 0
+		var isOver = false
+		var isDataArrive = true//给请求上锁，防止因为滚动的速度快于AJAX请求得到数据的时间，导致多次请求
+
+		getNews()//在没有滚动时，先发送一次AJAX请求，保证页面上有内容
+    $(window).on('scroll', function(){
+			
+				if(isShow($('.load-more')) && !isOver && isDataArrive){
+					getNews()
+				}
+		})
+
+		function getNews(){//向后台发送AJAX请求 得到新闻数据
+				isDataArrive = false
+				$.get('/getNews', {page: pageIndex}).done(function(ret){
+					isDataArrive = true
+					if(ret.status === 0){
+						pageIndex++
+						appendHTML(ret.data)
+						
+					}else {
+						alert('获取新闻出错')
+					}
+				}).fail(function(){
+					alert('系统异常')
+				})
+			}
+
+  	
+
+		function appendHTML(content){
+			if(content.length === 0){
+				isOver = true
+				$('.container').append('<p>没有更多数据了~~~</p>')
+			}
+
+			var html = ''
+			$.each(content, function(){
+
+				html += '<li class="item clearfix">'
+				html += '<a href=' + this.link + '>'
+				html += '<div class="thumb">'
+				html += '<img src=' + this.img + '></div>'
+				html += '<h2>' + this.title + '</h2>'
+				html += '<p>' + this.brif + '</p></a></li>'
+			})
+
+			$('.news').append(html)
+
+		}
+
+		function isShow($node){
+        var windowHeight = $(window).height(),
+            scrollTop = $(window).scrollTop(),
+            offset = $node.offset().top,
+            nodeHeight = $node.height()
+        
+        if(windowHeight + scrollTop > offset && scrollTop < offset + nodeHeight){
+            return true
+        }else {
+            return false
+        }
+    }
+  	</script>
+</body>
+</html>
