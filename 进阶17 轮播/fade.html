@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>渐进渐入的轮播</title>
+    <style>
+        a {
+            text-decoration: none;
+            color: white;
+        }
+        
+        ul,
+        li {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+        
+        .clearfix::after {
+            content: '';
+            display: block;
+            visibility: hidden;
+            clear: both;
+        }
+        
+        .slider-ct {
+            width: 500px;
+            height: 375px;
+            position: relative;
+        }
+        
+        .slider {
+            position: relative;
+            height: 375px;
+            width: 500px;
+        }
+        
+        .slider > li {
+            position: absolute;
+            display: none;/*核心点，开始全部都隐藏*/
+        }
+        /*左右按钮*/
+        
+        .btn {
+            position: absolute;
+            top: 50%;
+            margin-top: -15px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #000;
+            opacity: 0.6;
+            color: #fff;
+            display: block;
+            text-align: center;
+            line-height: 30px;
+        }
+        
+        .btn-pre {
+            left: 10px;
+        }
+        
+        .btn-next {
+            right: 10px;
+        }
+        
+        .bullet-ct {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            text-align: center;
+        }
+        
+        .bullet {
+            display: inline-block;
+        }
+        
+        .bullet>li {
+            width: 20px;
+            height: 5px;
+            border-radius: 3px;
+            background-color: #fff;
+            margin: 0 5px;
+            display: inline-block;
+            cursor: pointer;
+        }
+        
+        .bullet>li.active {
+            background: #666;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slider-ct">
+        <ul class="slider">
+            <li>
+                <a href="#">
+                    <img src=".\images\1.jpg" alt="">
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <img src=".\images\2.png" alt="">
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <img src=".\images\3.jpg" alt="">
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <img src=".\images\4.jpg" alt="">
+                </a>
+            </li>
+        </ul>
+        <a href="" class="btn btn-pre">&lt;</a>
+        <a href="" class="btn btn-next">&gt;</a>
+        <div class="bullet-ct">
+            <ul class="bullet">
+                <li class="active">  
+                </li>
+                <li></li>
+                <li></li>
+                <li></li>
+            </ul>
+        </div>
+    </div>
+</body>
+<script src=".\jquery-3.2.0.min.js"></script>
+<script>
+    $imgList = $('.slider').children()
+    $prebtn = $('.btn-pre')
+    $nextbtn = $('.btn-next')
+    $bullet = $('.bullet')
+    $imgLength = $imgList.length //图片的数量
+
+
+    var isFading = false //上锁，防止重复点击
+    var currentIndex = 0 //记录现在是第几张图
+    var clock//定时器
+
+     play(0)//首先出现第一张图片
+     autoplay()
+
+    $prebtn.on('click', function(e){
+         stopAutoplay()//停止自动播放，以免和点击上一张事件混淆
+         e.preventDefault()//阻止a链接的默认刷新事件，防止一点击a链接就刷新页面
+         playPre()
+    })
+
+    $nextbtn.on('click', function(e){
+         e.preventDefault()
+         stopAutoplay()
+         playNext()
+    })
+
+    $bullet.on('click', 'li', function(e){
+        stopAutoplay()
+        var currentBullet = $(e.target).index()
+        play(currentBullet)
+        setBullet(currentBullet)
+    })
+    //当前页fadeout,下一张fadein
+    function playNext(){
+        play((currentIndex+1)%$imgLength)
+    }
+    //当前页fadeout，前一张fadein
+    function playPre(){
+        play((currentIndex+$imgLength-1)%$imgLength)
+    }
+
+
+    function play(targetIndex){
+        if(isFading){
+            return //表示正在进行fadein/fadeout
+        }
+        isFading = true
+        $imgList.eq(currentIndex).fadeOut(500)//先让现在的图片消失
+        $imgList.eq(targetIndex).fadeIn(500, function(){
+            isFading = false
+        })
+
+        currentIndex = targetIndex
+        setBullet(targetIndex)
+
+    }
+    
+    function setBullet(idx){
+        $bullet.children().removeClass('active')
+                          .eq(idx)
+                          .addClass('active')
+    }
+
+    function autoplay(){
+        clock = setInterval(function(){
+            playNext()
+        }, 1000)
+    }
+
+    function stopAutoplay(){
+        clearInterval(clock)
+    }
+</script>
+
+</html>

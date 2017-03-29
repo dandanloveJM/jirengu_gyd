@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Slider</title>
+  <style>
+  ul,li {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  a {
+    text-decoration: none;
+  }
+  .clearfix:after {
+    content: '';
+    display: block;
+    clear: both;
+  }
+  .img-list {
+    position: relative;
+    height: 200px;
+    width: 1200px;
+    left: -310px;
+  }
+  .img-list > li {
+    float: left;
+  }
+  .slider {
+    position: relative;
+    width: 310px;
+    height: 200px;
+    overflow: hidden;
+  }
+  .slider .img-list img {
+    width: 310px;
+    height: 200px;
+
+  }
+  /*按钮*/
+  .slider .btn {
+    position: absolute;
+    top: 50%;
+    margin-top: -15px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #000;
+    opacity: 0.6;
+    color: #fff;
+    display: block;
+    text-align: center;
+    line-height: 30px;
+  }
+  .btn-pre {
+    left: 10px;
+  }
+  .btn-next {
+    right: 10px;
+  }
+  .slider .bullet-ct {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    text-align: center;
+  }
+  .slider .bullet {
+    display: inline-block;
+  }
+  .slider .bullet>li {
+    width: 20px;
+    height: 5px;
+    border-radius: 3px;
+    background-color: #fff;
+    margin: 0 5px;
+    display: inline-block;
+    cursor: pointer;
+  }
+  .bullet>li.active {
+    background: #666;
+  }
+  </style>
+</head>
+<body>
+<div class="slider">
+  <ul class="img-list clearfix">
+   
+    <li data-index=0><a href=""><img src="http://cdn.jirengu.com/book.jirengu.com/img/1.jpg" alt=""></a></li>
+    <li data-index=1><a href=""><img src="http://cdn.jirengu.com/book.jirengu.com/img/2.jpg" alt=""></a></li>
+    <li data-index=2><a href=""><img src="http://cdn.jirengu.com/book.jirengu.com/img/3.jpg" alt=""></a></li>
+    <li data-index=3><a href=""><img src="http://cdn.jirengu.com/book.jirengu.com/img/4.jpg" alt=""></a></li>
+   
+  </ul>
+  <a href="" class="btn btn-pre">&lt;</a>
+  <a href="" class="btn btn-next">&gt;</a>
+  <div class="bullet-ct">
+      <ul class="bullet">
+          <li class="active">  
+          </li>
+          <li></li>
+          <li></li>
+          <li></li>
+      </ul>
+  </div>
+  
+</div>
+</body>
+<script src=".\jquery-3.2.0.min.js"></script>
+<script>
+ var $imgList = $('.img-list')
+ var $preBtn = $('.btn-pre')
+ var $nextBtn = $('.btn-next')
+ var $bullet = $('.bullet')
+ var $firstImg = $imgList.find('li').first(),
+     $lastImg = $imgList.find('li').last()
+
+//知道当前在第几页
+var currPageIndex = 0
+var imgLength = $imgList.children().length
+var clock //定时器
+
+var isAnimate = false //判断是否正在轮播，防止重复点击
+
+ $imgList.prepend($lastImg.clone())
+ $imgList.append($firstImg.clone())
+
+$imgList.width($firstImg.width() * $imgList.children().length)
+
+
+$preBtn.on('click', function(e){
+  stopAutoplay()//当点击按钮时，停止自动播放
+  e.preventDefault()//阻止默认事件，防止一点击a链接就刷新页面
+  playPre()
+})
+
+$nextBtn.on('click', function(e){
+  stopAutoplay()
+  e.preventDefault()
+  playNext()
+})
+
+autoplay()
+
+
+function autoplay(){
+  
+  clock = setInterval(function(){
+    playNext()
+  }, 2000)
+}
+
+function stopAutoplay(){
+  clearInterval(clock)
+}
+function playNext(){
+  if(isAnimate){
+    return //如果正在轮播则退出
+  }
+
+  isAnimate = true //表示轮播开始
+  $imgList.animate({
+    left:'-=310'
+  }, function(){
+    currPageIndex++;
+    if(currPageIndex === imgLength){
+      $imgList.css('left', '-310px')
+      currPageIndex = 0
+    }
+    isAnimate = false //轮播结束
+    setBullet()
+  })
+ 
+}
+
+function playPre(){
+  if(isAnimate){
+    return //如果正在轮播则退出
+  }
+
+  isAnimate = true //表示轮播开始
+  $imgList.animate({
+    left: '+=310'
+  }, function(){
+    currPageIndex--
+    if(currPageIndex < 0){
+      $imgList.css({'left': -(imgLength*$firstImg.width())})
+      currPageIndex = imgLength - 1
+    }
+    isAnimate = false //轮播结束
+    setBullet()
+  })
+  
+}
+//设置下面的按钮
+function setBullet(){
+  $bullet.children().removeClass('active')
+                    .eq(currPageIndex)
+                    .addClass('active')
+}
+
+
+$('.bullet').on('click', 'li', function(event){
+  stopAutoplay()
+  event.preventDefault()
+   var targetIndex = $(event.currentTarget).index()
+   var changeIndex = targetIndex - currPageIndex
+   var changeWidth = $firstImg.width()*changeIndex
+
+
+   $imgList.animate({
+     left: '-=' + changeWidth +'px'
+   }, function(){
+     currPageIndex = targetIndex
+     setBullet()
+   })
+  
+
+})
+
+</script>
+</html>

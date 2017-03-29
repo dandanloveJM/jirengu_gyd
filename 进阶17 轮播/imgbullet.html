@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Slider</title>
+  <style>
+  ul,li {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  a {
+    text-decoration: none;
+  }
+  .clearfix:after {
+    content: '';
+    display: block;
+    clear: both;
+  }
+  .img-list {
+    position: relative;
+    height: 200px;
+    width: 1200px;
+    left: -310px;
+  }
+  .img-list > li {
+    float: left;
+  }
+  .slider {
+    position: relative;
+    width: 1000px;
+    height: 570px;
+    overflow: hidden;
+  }
+  .slider .img-list img {
+    width: 1000px;
+    height: 562px;
+
+  }
+  /*按钮*/
+  .slider .btn {
+    position: absolute;
+    top: 50%;
+    margin-top: -15px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #000;
+    opacity: 0.6;
+    color: #fff;
+    display: block;
+    text-align: center;
+    line-height: 30px;
+  }
+  .btn-pre {
+    left: 10px;
+  }
+  .btn-next {
+    right: 10px;
+  }
+  .slider .bullet-ct {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    text-align: center;
+  }
+  .slider .bullet {
+    display: inline-block;
+  }
+  .slider .bullet>li {
+    width: 100px;
+    height: 53px;
+    margin: 0 5px;
+    display: inline-block;
+    cursor: pointer;
+    opacity: 0.5;
+  }
+  .bullet>li.active {
+    opacity: 1;
+  }
+  </style>
+</head>
+<body>
+<div class="slider">
+  <ul class="img-list clearfix">
+    <li data-index=0><a href=""><img src=".\images\origin\origin1.jpg" alt=""></a></li>
+    <li data-index=1><a href=""><img src=".\images\origin\origin2.jpg" alt=""></a></li>
+    <li data-index=2><a href=""><img src=".\images\origin\origin3.jpg" alt=""></a></li>
+    <li data-index=3><a href=""><img src=".\images\origin\origin4.jpg" alt=""></a></li>
+    <li data-index=4><a href=""><img src=".\images\origin\origin5.jpg" alt=""></a></li>
+
+  </ul>
+  <a href="" class="btn btn-pre">&lt;</a>
+  <a href="" class="btn btn-next">&gt;</a>
+  <div class="bullet-ct">
+      <ul class="bullet">
+        <li class="active"><a href=""><img src=".\images\thumb\thumb1.jpg" alt=""></a></li>
+        <li><a href=""><img src=".\images\thumb\thumb2.jpg" alt=""></a></li>
+        <li><a href=""><img src=".\images\thumb\thumb3.jpg" alt=""></a></li>
+        <li><a href=""><img src=".\images\thumb\thumb4.jpg" alt=""></a></li>
+        <li><a href=""><img src=".\images\thumb\thumb5.jpg" alt=""></a></li>
+      </ul>
+  </div>
+  
+</div>
+</body>
+<script src=".\jquery-3.2.0.min.js"></script>
+<script>
+ var $imgList = $('.img-list')
+ var $preBtn = $('.btn-pre')
+ var $nextBtn = $('.btn-next')
+ var $bullet = $('.bullet')
+ var $firstImg = $imgList.find('li').first(),
+     $lastImg = $imgList.find('li').last()
+  var clock //定时器
+//知道当前在第几页
+var currPageIndex = 0
+var imgLength = $imgList.children().length
+
+var isAnimate = false //判断是否正在轮播，防止重复点击
+
+ $imgList.prepend($lastImg.clone())
+ $imgList.append($firstImg.clone())
+
+$imgList.width($firstImg.width() * $imgList.children().length)
+//规定最开始的状态
+$imgList.css('left', '-1000px')
+//按下左边的箭头
+$preBtn.on('click', function(e){
+  e.preventDefault()
+  stopAutoplay()
+  playPre()
+  
+})
+//按下右边的箭头
+$nextBtn.on('click', function(e){
+  e.preventDefault()
+  stopAutoplay()
+  playNext()
+})
+//点击下面的缩略图进行图片切换
+$('.bullet').on('click', 'li', function(event){
+  event.preventDefault()
+   var targetIndex = $(event.currentTarget).index()
+   var changeIndex = targetIndex - currPageIndex
+   var changeWidth = $firstImg.width()*changeIndex
+
+
+   $imgList.animate({
+     left: '-=' + changeWidth +'px'
+   }, function(){
+     currPageIndex = targetIndex
+     setBullet()
+   })
+  
+
+})
+autoplay()
+//自动播放
+function autoplay(){
+  clock = setInterval(function(){
+    playNext()
+  }, 2000)
+}
+
+function stopAutoplay(){
+  clearInterval(clock)
+}
+
+function playNext(){
+
+  if(isAnimate){
+    return //如果正在轮播则退出
+  }
+
+  isAnimate = true //表示轮播开始
+  $imgList.animate({
+    left:'-='+ $firstImg.width()
+  }, function(){
+    currPageIndex++;
+    console.log('currPageIndex: '+ currPageIndex)
+    console.log('imgLength'+ imgLength)
+    if(currPageIndex === imgLength){
+      $imgList.css('left', '-'+$firstImg.width()+'px')
+      currPageIndex = 0
+    }
+    isAnimate = false //轮播结束
+    setBullet()
+  })
+ 
+}
+
+function playPre(){
+
+  if(isAnimate){
+    return //如果正在轮播则退出
+  }
+
+  isAnimate = true //表示轮播开始
+  $imgList.animate({
+    left: '+=' + $firstImg.width()
+  }, function(){
+    currPageIndex--
+    console.log('currPageIndex'+currPageIndex)
+    if(currPageIndex < 0){
+      $imgList.css({'left': -(imgLength*$firstImg.width())})
+      currPageIndex = imgLength - 1
+    }
+    isAnimate = false //轮播结束
+    setBullet()
+  })
+  
+}
+
+//下面的缩略图同步变化
+function setBullet(){
+  $bullet.children().removeClass('active')
+                    .eq(currPageIndex)
+                    .addClass('active')
+}
+
+
+
+
+</script>
+</html>
