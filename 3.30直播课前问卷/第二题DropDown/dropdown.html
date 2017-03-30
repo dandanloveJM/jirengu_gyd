@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>dropdown</title>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href=".\css\font-awesome.min.css">
+        <style>
+        a {
+            text-decoration: none;
+            color: black;
+            font-family: 'Times New Roman', Times, serif;
+        }
+        .btn {
+            padding: 5px 10px;
+            line-height: 36px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        .dropdown-menu {
+            width: 154px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-top: 1px;
+            display: none;/*隐藏*/
+
+        }
+        .dropdown-item {
+            line-height: 24px;
+            padding: 10px 9px;
+            display: block;
+        }
+        .dropdown-menu a.active {
+            background: #ccc;
+        }
+        </style>
+    </head>
+    <body>
+        <div class="dropdown show">
+            <a class="btn btn-secondary dropdown-toggle" href="#" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Dropdown link
+                <i class="icon-angle-down"></i>
+            </a>
+
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                <a class="dropdown-item active" href="#">Action</a>
+                <a class="dropdown-item" href="#">Another action</a>
+                <a class="dropdown-item" href="#">Something else here</a>
+            </div>
+        </div>
+    </body>
+
+    <script src="jquery-3.2.0.min.js"></script>
+    <script>
+        var $btn = $('.btn')
+        var $dropdownMenu = $('.dropdown-menu')
+
+        function dropdown ($div){
+            $btn.on('click', function(e){
+            e.preventDefault()
+            e.stopPropagation()
+            $div.css({'display':'block'})
+        })
+        
+        $div.children().on('mouseenter', function(e){
+            $(e.currentTarget).siblings().removeClass('active')
+            $(e.currentTarget).addClass('active')
+        })
+
+        $(window).on('click', function(){
+            $div.css({'display':'none'})
+        })
+        }
+        
+        dropdown($dropdownMenu)
+    </script>
+</html>
