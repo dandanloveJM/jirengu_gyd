@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>  
+    <head>
+        <title>木桶布局</title>
+        <meta charset="utf-8">
+        <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+        .img-container {
+            width: 1000px;
+            margin: 0 auto;
+        }
+        .img-row:after {
+            content:'';
+            display: block;
+            clear: both;
+        }
+        .img-box {
+            float: left;
+            margin-right: 8px;
+        }
+        </style>
+    </head>
+    <body>
+        <div class="img-container">
+            
+        </div>
+        <script src="jquery-3.2.0.min.js"></script>
+        <script>
+        function Barrel(container){
+            this.$container = $(container)
+            this.rowList = []//设立一个空数组，用来保存记录图片的宽度
+            this.loadImg()//加载图片
+        }
+
+        Barrel.prototype = {
+            getImgURL: function(num){//获取随机图片
+                var urls = [] //保存图片地址的空数组
+                var height, width
+
+                for(var i = 0; i < num; i++){
+                    width = Math.floor(Math.random()*300 + 100)
+                    height = 200
+                    urls.push("https://unsplash.it/" + width + '/' + height)
+                }
+
+                return urls
+            },
+            loadImg: function(){//根据得到的图片数据(如url,宽高)创建图片对象
+                var barrel = this //保存this
+                var imgUrls = this.getImgURL(60)
+                //得到了图片的url
+                $.each(imgUrls, function(index, url){
+                    var img = new Image()
+                    img.src = url
+                    img.onload = function(){//只有当图片加载之后，它的宽高才有意义
+                        var imgInfo = {
+                            target: img,
+                            width: parseInt(200 * (img.width/img.height)),
+                            height: 200
+                        }
+                
+                        barrel.render(imgInfo) //根据图片宽高进行排布
+                        
+                    }
+                })
+
+            },
+            render:function(imgInfo){
+                var barrel = this
+                var clientWidth = this.$container.width()
+                var rowWidth = 0
+                var ratio
+                var lastImg = imgInfo
+                var marginRight = 8
+                var newRowWidth
+
+                barrel.rowList.push(imgInfo)
+
+                $.each(this.rowList, function(index, imgInfo){
+                    rowWidth += imgInfo.width + marginRight
+                })
+
+                if(rowWidth > clientWidth){
+                    barrel.rowList.pop()
+                    var newRowWidth = rowWidth - imgInfo.width
+                    ratio = newRowWidth/clientWidth
+                    barrel.layout(ratio)
+                    barrel.rowList = []
+                    barrel.rowList.push(imgInfo)
+                }
+            },
+            layout: function(ratio){
+                var $rowCt = $('<div class="img-row"></div>')
+                $.each(barrel.rowList, function(index, imgInfo){
+                    var $imgCt = $('<div class="img-box"></div>')
+                    var $img = $(imgInfo.target)
+                    console.log(ratio)
+                    $img.height(parseInt(200/ratio))
+                    $img.width(parseInt(imgInfo.width/ratio))
+                    $imgCt.append($img)
+                    $rowCt.append($imgCt)
+                })
+              this.$container.append($rowCt)
+            }
+
+        }
+        var barrel = new Barrel('.img-container')
+        </script>
+    </body>
+
+     

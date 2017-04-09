@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>  
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            position: relative;
+            max-width: 1040px;
+            margin: 0 auto;
+           
+        }
+        .container > .item {
+            width: 200px;
+            margin: 10px;
+            position: absolute;
+            text-align: center;
+            color: #fff;
+            font-size: 30px;
+            transition: all 0.5s;
+        }
+        .h1 {
+            height: 400px;
+            background: lightcoral;
+        }
+        .h2 {
+            height: 520px;
+            background: sandybrown;
+        }
+        .h3 {
+            height: 300px;
+            background: lightblue;
+        }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="item h1"></div>
+            <div class="item h2"></div>
+            <div class="item h3"></div>
+            <div class="item h2 "></div>
+            <div class="item h1"></div>
+            <div class="item h1"></div>
+            <div class="item h3"></div>
+            <div class="item h2"></div>
+            <div class="item h3"></div>
+            <div class="item h1"></div>
+            <div class="item h1"></div>
+            <div class="item h2"></div>
+            <div class="item h3"></div>
+            <div class="item h2"></div>
+        </div>
+    </body>
+    <script src=".\jquery-3.2.0.min.js"></script>
+    <script>
+        waterfull()
+        $(window).on('resize', function(){
+            waterfull()
+        })
+        function waterfull(){
+            var columnLength = parseInt($('.container').width()/$('.item').width())
+            var itemArr = []
+            for(var i = 0; i < columnLength; i++){
+                itemArr[i] = 0
+            }
+            //对于每一个item,找到高度的最小值
+            $('.item').each(function(){
+                var minValue = Math.min.apply(null, itemArr)
+                console.log(minValue)
+                var minIndex = itemArr.indexOf(minValue)
+                console.log(minIndex)
+                $(this).css({
+                    top: itemArr[minIndex],
+                    left: $(this).outerWidth(true) * minIndex
+                })
+
+                itemArr[minIndex] += $(this).outerHeight(true)
+            })
+        }
+        
+    </script>
+</html>
