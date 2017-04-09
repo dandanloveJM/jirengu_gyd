@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="jquery-3.2.0.min.js"></script>
+  <meta charset="utf-8">
+  <title>JS Bin</title>
+  <style>
+   * {
+     margin:0;
+     padding: 0;
+     box-sizing: border-box;
+   }
+    a {
+      text-decoration: none;
+      color: #000;
+
+    }
+   .container {
+     width: 900px;
+     margin: 0 auto;
+   }
+    .clearfix:after {
+      content:'';
+      clear: both;
+      display: block;
+    }
+    .news {
+        width: 280px;
+        float: left;
+        margin: 10px 10px;
+    }
+  .news>a{
+    width: 280px;
+    border: 1px solid #ccc;
+    margin: 10px 10px;
+    padding: 15px 10px;
+   
+    display: block;
+
+  }
+   .img-box {
+     width: 100%;
+     text-align: center;
+   }
+   .news img {
+     width: 250px;
+
+   }
+    .news h2 {
+      font-size: 20px;
+      border-bottom: 1px solid #ccc;
+      text-align:left;
+      margin: 10px 0;
+    }
+    .news p{
+      margin-top: 10px;
+      font-size: 16px;
+      color: #333;
+    }
+    #load {
+        visibility: hidden;
+        height: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container clearfix">
+    <div class="news clearfix" id="column1">
+     
+    </div>
+    
+    <div class="news clearfix" id="column2">
+      
+    </div>
+    
+    <div class="news clearfix" id="column3">
+      
+    </div>
+  </div>
+  <div id="load">你看不见我</div>
+
+</body>
+  <script>
+    var perPageNum = 3
+    var currentPage = 1
+    var columnHeights = []
+    var count = 0
+    
+    getUrl(function(newsList){
+      $.each(newsList, function(index, news){
+       
+        var $node = $(getNode(news))
+        var columnIndex = index + 1
+        $('#column'+ columnIndex).append($node)
+        $node.find('img').on('load', function(event){
+            columnHeights.push($(event.target).closest('a').height())
+            console.log('还没有申请新的数据的' + columnHeights)
+            count++
+            if(count%3==0){
+                loadThreeMore(count+1)
+            }
+            
+            
+
+        })
+      })
+    })
+    
+   function loadThreeMore(n){
+        console.log('n is '+ n)
+        if(n > 3 && n % 3 === 1 && isVisible($('#load')) ){
+            getUrl(function(newsList){//一次性要了3条数据
+                $.each(newsList, function(index, news){
+                    var $newNode = $(getNode(news))
+                    //寻找高度最小的column插进去
+                    var minHeight = Math.min.apply(null, columnHeights)
+                    var minIndex = columnHeights.indexOf(minHeight)
+                    var targetColumnIndex = minIndex + 1
+                    $('#column' + targetColumnIndex).append($newNode)
+                    
+                    $newNode.find('img').on('load', function(event){
+                        columnHeights[minIndex] += $(event.target).closest('a').height()
+                        n++
+                        if(n%3==0){
+                            loadThreeMore(n+1)
+                        }
+                        
+                    })
+
+                })
+                
+            })
+            
+        }
+    }
+
+    function getNode(news){
+      var html = ''
+      html += `<a href="${news.url}">
+            <div class="img-box">
+            <img src="${news.img_url}" alt="">
+            
+          </div>
+          <h2>${news.short_name}</h2>
+          <p>${news.short_intro}</p>
+      </a>`
+      
+      return html
+     
+      
+    }
+    
+    function getUrl(callback){
+
+      $.ajax({
+			url: 'http://platform.sina.com.cn/slide/album_tech',
+			dataType: 'jsonp',   
+			jsonp:"jsoncallback",
+			data: {
+				app_key: '1271687855',
+				num: perPageNum,
+				page: currentPage
+			}
+		}).done(function(ret){
+			if(ret && ret.status && ret.status.code === "0"){
+                currentPage++
+				callback(ret.data)  //如果数据没问题，那么生成节点并摆放好位置
+		
+			}else{
+				console.log('get error data');
+			}
+		});
+    }
+  
+  function isVisible($element){
+	  var scrollH = $(window).scrollTop(),
+	  	  winH = $(window).height(),
+	  	  top = $element.offset().top;
+
+  	  if(top < winH + scrollH){
+  	  	return true;
+  	  }else{
+  	  	return false;
+  	  }
+	}
+  </script>
+</html>
