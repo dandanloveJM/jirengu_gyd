@@ -130,7 +130,7 @@
         this.arrowRight = $(container).find('.right')
         this.imgList = $(container).find('.img-list')
         this.imgLength = $(container).find('.img-list').find('img').length
-        this.bullet = $(container).find('.bullet')
+        this.bullet = $(container).find('.bullet>li')
         this.addEvent()
         this.clone()
         this.autoplay()
@@ -165,6 +165,9 @@
             slider.stopAutoplay()
           //如果是向右滑动就传递false
             slider.move(false)
+        })
+        slider.bullet.on('click', function(){
+
         })
     }
     Slider.prototype.calculateIndex = function (isLeft) {
@@ -224,6 +227,7 @@
                               .eq(this.currentIndex)
                               .addClass('active')
     }
+    
     Slider.prototype.autoplay = function(){
         var slider = this
         this.clock = setInterval(function(){
