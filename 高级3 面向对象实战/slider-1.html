@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Slider</title>
+    <style>
+        ul,
+        li {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .clearfix:after {
+            content: '';
+            display: block;
+            clear: both;
+        }
+
+        .slider {
+            max-width: 1000px;
+            min-height: 565px;
+            position: relative;
+            overflow: hidden;
+            margin: 0 auto;
+        }
+
+        .img-list {
+            position: relative;
+            width: 7000px;
+            margin-left: -1000px;
+            height: 600px;
+            
+        }
+
+        .img-list>li {
+            float: left;
+        }
+
+        .slider .img-list img {
+            width: 1000px;
+            display: inline-block;
+        }
+        /*按钮*/
+
+        .slider .btn {
+            z-index: 4;
+            position: absolute;
+            top: 50%;
+            margin-top: -15px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #000;
+            opacity: 0.6;
+            color: #fff;
+            display: block;
+            text-align: center;
+            line-height: 30px;
+        }
+
+        .left {
+            left: 10px;
+        }
+
+        .right {
+            right: 10px;
+        }
+
+        .slider .bullet-ct {
+            position: absolute;
+            bottom: 56px;
+            left: 0;
+            right: 0;
+            text-align: center;
+        }
+
+        .slider .bullet {
+            display: inline-block;
+        }
+
+        .slider .bullet>li {
+            width: 100px;
+            height: 53px;
+            margin: 0 5px;
+            display: inline-block;
+            cursor: pointer;
+            opacity: 0.5;
+        }
+
+        .bullet>li.active {
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slider">
+        <ul class="img-list clearfix">
+            <li data-index=0><a href=""><img src=".\images\origin\origin1.jpg" alt=""></a></li>
+            <li data-index=1><a href=""><img src=".\images\origin\origin2.jpg" alt=""></a></li>
+            <li data-index=2><a href=""><img src=".\images\origin\origin3.jpg" alt=""></a></li>
+            <li data-index=3><a href=""><img src=".\images\origin\origin4.jpg" alt="" style="width: 1000px; height: 562px;"></a></li>
+            <li data-index=4><a href=""><img src=".\images\origin\origin5.jpg" alt=""></a></li>
+
+        </ul>
+        <a href="javascript:void(0);" class="btn left">&lt;</a>
+        <a href="javascript:void(0);" class="btn right">&gt;</a>
+        <div class="bullet-ct">
+            <ul class="bullet">
+                <li class="active"><a href=""><img src=".\images\thumb\thumb1.jpg" alt=""></a></li>
+                <li><a href=""><img src=".\images\thumb\thumb2.jpg" alt="" ></a></li>
+                <li><a href=""><img src=".\images\thumb\thumb3.jpg" alt=""></a></li>
+                <li><a href=""><img src=".\images\thumb\thumb4.jpg" alt=""></a></li>
+                <li><a href=""><img src=".\images\thumb\thumb5.jpg" alt=""></a></li>
+            </ul>
+        </div>
+
+    </div>
+</body>
+<script src="jquery-3.2.0.min.js"></script>
+<script>
+    var Slider = function (container) {
+        this.arrowLeft = $(container).find('.left')
+        this.arrowRight = $(container).find('.right')
+        this.imgList = $(container).find('.img-list')
+        this.imgLength = $(container).find('.img-list').find('img').length
+        this.bullet = $(container).find('.bullet')
+        this.addEvent()
+        this.clone()
+        this.autoplay()
+        this.currentIndex = 0
+        this.animating = false
+        this.clock 
+        this.setCSS(0)
+
+    }
+    Slider.prototype.clone = function () {
+        var firstImg = this.imgList.find('li').first()
+        var lastImg = this.imgList.find('li').last()
+        this.imgList.prepend(lastImg.clone())
+        this.imgList.append(firstImg.clone())
+    }
+    Slider.prototype.addEvent = function () {
+        var slider = this
+
+        var arrowRight = slider.arrowLeft
+        slider.arrowLeft.on('click', function () {
+            if(this.animating){
+                return
+            }
+            slider.stopAutoplay()
+            //如果是向右滑动就传递true
+            slider.move(true)
+        })
+        slider.arrowRight.on('click', function () {
+            if(this.animating){
+                return
+            }
+            slider.stopAutoplay()
+          //如果是向右滑动就传递false
+            slider.move(false)
+        })
+    }
+    Slider.prototype.calculateIndex = function (isLeft) {
+
+        if (isLeft) {//往左滑动
+            this.currentIndex--
+        } else {
+            this.currentIndex++
+        }
+
+        this.currentIndex = this.currentIndex % (this.imgLength + 1)
+        console.log(this.currentIndex)
+        if (this.currentIndex === -1) {
+            //moveto真正的最后一张
+            this.changeSilently(this.imgLength - 1)
+            this.currentIndex = this.imgLength - 1
+
+        } else if (this.currentIndex === this.imgLength) {
+            //移动至真正的第一张
+            this.currentIndex = 0
+            this.changeSilently(this.currentIndex)
+        }
+
+        return this.currentIndex
+
+    }
+   
+    Slider.prototype.move = function (isLeft) {
+        var slider = this
+        slider.animating = true
+        if (isLeft) {
+            this.imgList.animate({
+                'left': '+=1000px'
+            }, function(){
+                slider.animating = false
+                currentIndex = slider.calculateIndex(isLeft)
+                slider.setBullet()
+                
+            })
+        }else {
+            this.imgList.animate({
+                'left': '-=1000px'
+            }, function(){
+                slider.animating = false
+                currentIndex = slider.calculateIndex(isLeft)
+                slider.setBullet()
+                
+            })
+        }
+
+    }
+    Slider.prototype.changeSilently = function (index) {
+        this.imgList.css('left', index * (-1000) + 'px')
+    }
+    Slider.prototype.setBullet = function(){
+        this.bullet.children().removeClass('active')
+                              .eq(this.currentIndex)
+                              .addClass('active')
+    }
+    Slider.prototype.autoplay = function(){
+        var slider = this
+        this.clock = setInterval(function(){
+            slider.move(false)
+        }, 2000)
+    }
+    Slider.prototype.stopAutoplay = function(){
+        clearInterval(this.clock)
+    }
+    new Slider($('.slider'))
+
+</script>
+
+</html>

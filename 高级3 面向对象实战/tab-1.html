@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Tab</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        ul,
+        li {
+            list-style: none;
+        }
+
+        .clearfix:after {
+            content: '';
+            display: block;
+            clear: both;
+        }
+
+        .tab {
+            width: 600px;
+            margin: 10px auto;
+            border: 1px solid saddlebrown;
+            padding: 30px;
+        }
+
+        .tab-header>li {
+            color: red;
+            border-right: 0;
+            float: left;
+            padding: 10px 20px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            border-radius: 5px 5px 0 0;
+        }
+
+        .tab-header>li.active {
+            background: #fff;
+            border: 1px solid #ccc ;
+            border-bottom:1px solid transparent;
+            color: #000;
+
+        }
+        .tab-body {
+            margin-top: -1px;
+            border-top: 1px solid #ccc;
+        }
+        .tab-body>li {
+            padding: 30px;
+            
+            display: none;
+        }
+
+        .tab-body>li.active {
+            display: block;
+        }
+    </style>
+    <script src="jquery-3.2.0.min.js"></script>
+</head>
+
+<body>
+    <div class="tab">
+        <ul class="tab-header clearfix">
+            <li class="active" data-index="0">tab1</li>
+            <li data-index="1">tab2</li>
+            <li data-index="2">tab3</li>
+        </ul>
+        <ul class="tab-body">
+            <li class="active" data-index="0">tab1内容</li>
+            <li data-index="1">tab2内容</li>
+            <li data-index="2">tab3内容</li>
+        </ul>
+    </div>
+
+
+
+    <script>
+        var Tab = function (tabHeader, tabBody) {
+            this.tabHeader = tabHeader.find('li')
+            console.log(this.tabHeader)
+            this.tabBody = tabBody.find('li')
+            this.addEvent()
+        }
+        Tab.prototype.addEvent = function () {
+            console.log(1)
+            var Tab = this
+            console.log(Tab.tabHeader)
+            Tab.tabHeader.on('click', function () {
+                var index = $(this).data('index')
+                console.log(index)
+                //将当前的tabHeader高亮
+                Tab.highlight(index)
+                //切换body
+                Tab.bodySwitch(index)
+            })
+
+        }
+        Tab.prototype.highlight = function (index) {
+            this.tabHeader.removeClass('active')
+            this.tabHeader.eq(index).addClass('active')
+        }
+        Tab.prototype.bodySwitch = function (index) {
+            this.tabBody.removeClass('active')
+            this.tabBody.eq(index).addClass('active')
+        }
+        new Tab($('.tab-header'), $('.tab-body'))
+
+    </script>
+</body>
+
+</html>
